@@ -11,6 +11,9 @@ const storeController = require('../controllers/storeController');
 */
 router.get('/', storeController.homePage);
 
+router.get('/add', storeController.addStore);
+router.post('/add', storeController.createStore);
+
 // create a new route where we put a variable inside the endpoint using ':' colon syntax
 router.get('/reverse/:name', (req, res) => {
   
