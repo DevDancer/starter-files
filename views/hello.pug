@@ -1,0 +1,17 @@
+//- div.wrapper.ohno
+//-     //- insert variable into element text
+//-     p.hello Hello, my cat's name is #{cat}
+//-     //- insert variable into attribute w/ JS string literal
+//-     img.dog(src="dog.jpg" alt=`Dog ${cat}`)
+
+//- h2 Hello
+//-     em How are you?
+
+//----------------
+
+//- tells the pug file to export this content to the layout.pug file
+extends layout 
+
+//- here we create a kind of pug 'variable' which replaces the 'content' block from the layout.pug file and inserts whatever pug code we insert here
+block content
+    p Hello
