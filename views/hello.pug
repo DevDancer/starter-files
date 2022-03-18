@@ -14,4 +14,4 @@ extends layout
 
 //- here we create a kind of pug 'variable' which replaces the 'content' block from the layout.pug file and inserts whatever pug code we insert here
 block content
-    p Hello
+    h2 Sale ends in #{h.moment().endOf('day').fromNow()}

@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
-
-// Do work here
+const storeController = require('../controllers/storeController');
 
 // Router works by specifying a router destination endpoint: '/' in this case
 // then, it runs a callback function when someone visits that route/URL
@@ -10,32 +9,7 @@ const router = express.Router();
     2. res = response, an object full of methods for sending data back to the user
     3. next = reviewed later in 'middleware' file (not handling here but passing on)
 */
-router.get('/', (req, res) => {
-
-  const ogi = {
-    name: 'Ogi',
-    age: 100,
-    cool: true
-  };
-
-  // res.json(ogi); // returns above object
-
-  // with req.query we can access any of the parameters which make up the request
-  // res.send(req.query.name);   // name parameter on query object
-  // res.send(req.query.age);    // age parameter
-
-  // res.send(req.query);    // entire query object
-
-  // don't use the res object more than once to send a response, will give error
-  // res.send('Hey! It works!');
-
-  // res.render takes two things: template to render, and local variable (info)
-  res.render('hello', {
-    name: 'ogi',
-    cat: req.query.cat
-  });
-
-});
+router.get('/', storeController.homePage);
 
 // create a new route where we put a variable inside the endpoint using ':' colon syntax
 router.get('/reverse/:name', (req, res) => {
