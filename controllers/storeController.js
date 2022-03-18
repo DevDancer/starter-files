@@ -1,8 +1,11 @@
 exports.homePage = (req, res) => {
-    
+
+    console.log(req.name);
     res.render('index');
 
 };
+
+// ------POSTERITY------
 
 // original content from index.js stored here for posterity
 exports.originalHomePage = (req, res) => {
