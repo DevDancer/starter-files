@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const storeController = require('../controllers/storeController');
+const { catchErrors } = require('../handlers/errorHandlers');
 
 // Router works by specifying a router destination endpoint: '/' in this case
 // then, it runs a callback function when someone visits that route/URL
@@ -9,10 +10,11 @@ const storeController = require('../controllers/storeController');
     2. res = response, an object full of methods for sending data back to the user
     3. next = reviewed later in 'middleware' file (not handling here but passing on)
 */
-router.get('/', storeController.homePage);
+router.get('/', catchErrors(storeController.getStores));
+router.get('/stores', catchErrors(storeController.getStores));
 
 router.get('/add', storeController.addStore);
-router.post('/add', storeController.createStore);
+router.post('/add', catchErrors(storeController.createStore)); // wrap our middleware in a separate catchError middleware to avoid having to use try-catch in every middleware (DRY)
 
 // create a new route where we put a variable inside the endpoint using ':' colon syntax
 router.get('/reverse/:name', (req, res) => {

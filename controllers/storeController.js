@@ -1,6 +1,9 @@
+const { create } = require('connect-mongo');
+const mongoose = require('mongoose');
+const Store = mongoose.model('Store');
+
 exports.homePage = (req, res) => {
 
-    console.log(req.name);
     res.render('index');
 
 };
@@ -11,11 +14,21 @@ exports.addStore = (req, res) => {
 
 };
 
-exports.createStore = (req, res) => {
+exports.createStore = async (req, res) => {
 
-    res.json(req.body);
+    const store = await (new Store(req.body)).save(); // will save to mongoDB and either: return store if successful, OR return the error that prevented it
+    req.flash('success', `Successfully Created ${store.name}. Care to leave a review?`);
+    res.redirect(`/store/${store.slug}`);      // redirects user to endpoint associated with the store they have just made
 
-}
+};
+
+exports.getStores = async (req, res) => {
+
+    // first, query DB for list of all stores
+    const stores = await Store.find();
+    res.render('stores', { title: 'Stores', stores });
+
+};
 
 // ------POSTERITY------
 
