@@ -15,6 +15,9 @@ router.get('/stores', catchErrors(storeController.getStores));
 
 router.get('/add', storeController.addStore);
 router.post('/add', catchErrors(storeController.createStore)); // wrap our middleware in a separate catchError middleware to avoid having to use try-catch in every middleware (DRY)
+router.post('/add/:id', catchErrors(storeController.updateStore));
+
+router.get('/stores/:id/edit', catchErrors(storeController.editStore));
 
 // create a new route where we put a variable inside the endpoint using ':' colon syntax
 router.get('/reverse/:name', (req, res) => {
