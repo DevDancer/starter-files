@@ -2,6 +2,33 @@
 /******/ 	"use strict";
 /******/ 	var __webpack_modules__ = ({
 
+/***/ "./public/javascripts/modules/autocomplete.js":
+/*!****************************************************!*\
+  !*** ./public/javascripts/modules/autocomplete.js ***!
+  \****************************************************/
+/***/ (function(__unused_webpack_module, __webpack_exports__, __webpack_require__) {
+
+__webpack_require__.r(__webpack_exports__);
+function autocomplete(input, latInput, lngInput) {
+  if (!input) return; // skip function if no input exists
+
+  var dropdown = new google.maps.places.Autocomplete(input);
+  dropdown.addListener('place_changed', function () {
+    var place = dropdown.getPlace();
+    latInput.value = place.geometry.location.lat();
+    lngInput.value = place.geometry.location.lng();
+  }); // stop default form submission behaviour
+
+  input.on('keydown', function (e) {
+    // bling.js way of saying addEventListener
+    if (e.keyCode === 13) e.preventDefault();
+  });
+}
+
+/* harmony default export */ __webpack_exports__["default"] = (autocomplete);
+
+/***/ }),
+
 /***/ "./public/javascripts/modules/bling.js":
 /*!*********************************************!*\
   !*** ./public/javascripts/modules/bling.js ***!
@@ -110,8 +137,11 @@ var __webpack_exports__ = {};
 __webpack_require__.r(__webpack_exports__);
 /* harmony import */ var _sass_style_scss__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! ../sass/style.scss */ "./public/sass/style.scss");
 /* harmony import */ var _modules_bling__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! ./modules/bling */ "./public/javascripts/modules/bling.js");
+/* harmony import */ var _modules_autocomplete__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ./modules/autocomplete */ "./public/javascripts/modules/autocomplete.js");
 
 
+
+(0,_modules_autocomplete__WEBPACK_IMPORTED_MODULE_2__["default"])((0,_modules_bling__WEBPACK_IMPORTED_MODULE_1__.$)('#address'), (0,_modules_bling__WEBPACK_IMPORTED_MODULE_1__.$)('#lat'), (0,_modules_bling__WEBPACK_IMPORTED_MODULE_1__.$)('#lng')); // bling framework subs 'document.querySelector' for '$'
 }();
 /******/ })()
 ;
