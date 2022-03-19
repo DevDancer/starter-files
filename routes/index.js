@@ -10,14 +10,32 @@ const { catchErrors } = require('../handlers/errorHandlers');
     2. res = response, an object full of methods for sending data back to the user
     3. next = reviewed later in 'middleware' file (not handling here but passing on)
 */
-router.get('/', catchErrors(storeController.getStores));
+router.get('/', catchErrors(storeController.getStores)); // wrap our middleware in a separate catchError middleware to avoid having to use try-catch in every middleware (DRY) - only if it is an async function
 router.get('/stores', catchErrors(storeController.getStores));
 
 router.get('/add', storeController.addStore);
-router.post('/add', catchErrors(storeController.createStore)); // wrap our middleware in a separate catchError middleware to avoid having to use try-catch in every middleware (DRY)
-router.post('/add/:id', catchErrors(storeController.updateStore));
+
+router.post(
+
+  '/add',
+  storeController.upload,
+  catchErrors(storeController.resize),
+  catchErrors(storeController.createStore)
+  
+);
+  
+router.post(
+    
+  '/add/:id',
+  storeController.upload,
+  catchErrors(storeController.resize),
+  catchErrors(storeController.updateStore)
+
+);
 
 router.get('/stores/:id/edit', catchErrors(storeController.editStore));
+
+router.get('/store/:slug', catchErrors(storeController.getStoreBySlug));
 
 // create a new route where we put a variable inside the endpoint using ':' colon syntax
 router.get('/reverse/:name', (req, res) => {

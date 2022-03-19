@@ -1,3 +1,4 @@
+const { Store } = require('express-session');
 const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;      // tell mongoose to wait for data from database via built-in ES6 promise
 const slug = require('slugs');      // makes URL friendly names for our slugs
@@ -33,11 +34,12 @@ const storeSchema = new mongoose.Schema({
             type: String,
             required: 'You must supply an address!'
         }
-    }
+    },
+    photo: String
 
 });
 
-storeSchema.pre('save', function(next) {
+storeSchema.pre('save', async function(next) {
     
     if(!this.isModified('name')) {
 
@@ -47,6 +49,16 @@ storeSchema.pre('save', function(next) {
     } else {
         
         this.slug = slug(this.name);
+
+        // find other stores with slug = ogi, ogi-1, ogi-2, etc
+        const slugRegEx = new RegExp(`^(${this.slug})((-[0-9]*$)?)$`, 'i');
+        const storesWithSlug = await this.constructor.find({ slug: slugRegEx });
+        if (storesWithSlug.length) {
+
+            this.slug = `${this.slug}-${storesWithSlug.length + 1}`;
+        
+        }
+
         next();
 
     }

@@ -1,6 +1,24 @@
-const { create } = require('connect-mongo');
 const mongoose = require('mongoose');
 const Store = mongoose.model('Store');
+const multer = require('multer');
+const jimp = require('jimp');
+const uuid = require('uuid');
+
+const multerOptions = {
+
+    strorage: multer.memoryStorage(),
+    fileFilter(req, file, next) {
+
+        const isPhoto = file.mimetype.startsWith('image/');
+        if (isPhoto) {
+            next(null, true);   // when passing two values to 'next', this implies the current function succeeded, and the second value is what needs to be passed along
+        } else {
+            next({ message: 'That filetype isn\'t allowed!' }, false);
+        }
+
+    }
+
+};
 
 exports.homePage = (req, res) => {
 
@@ -11,6 +29,24 @@ exports.homePage = (req, res) => {
 exports.addStore = (req, res) => {
     
     res.render('editStore', { title: '💩 Add Store' });
+
+};
+
+// store photo to server memory (temporary)
+exports.upload = multer(multerOptions).single('photo');
+
+exports.resize = async (req, res, next) => {
+
+    // check if there is no new file to resize
+    if (!req.file) return next();     // skip to next middleware
+    const extension = req.file.mimetype.split('/')[1];  // grab 'jpeg' from mimetype
+    req.body.photo = `${uuid.v4()}.${extension}`;
+    // now, resize
+    const photo = await jimp.read(req.file.buffer);
+    await photo.resize(800, jimp.AUTO);
+    await photo.write(`./public/uploads/${req.body.photo}`);
+    // once we've written the photo to filesystem, keep going
+    next();
 
 };
 
@@ -59,6 +95,15 @@ exports.updateStore = async (req, res) => {
     req.flash('success', `Successfully Updated <strong>${store.name}</strong>. <a href="/stores/${store.slug}">View Store ➡️</a>`);
     res.redirect(`/stores/${store._id}/edit`);
     
+};
+
+exports.getStoreBySlug = async (req, res, next) => {
+
+    const store = await Store.findOne({ slug: req.params.slug });
+    if (!store) return next(); // if nothing is found, go to next middleware
+    res.render('store', { store, title: store.name });
+    res.json(store);
+
 };
 
 // ------POSTERITY------
