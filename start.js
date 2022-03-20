@@ -21,6 +21,7 @@ mongoose.connection.on('error', (err) => {
 
 // import all models
 require('./models/Store');
+require('./models/User');
 // Only needs to be done once because as soon as we mongoose.connect (above, L14) and then import models, mongoDB will know about them throughout your entire application. This uses a concept in node called a SIMPLETON (meaning a action only needs to be performed in one file of the app)
 
 // Start our app!

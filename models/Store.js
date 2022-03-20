@@ -1,4 +1,3 @@
-const { Store } = require('express-session');
 const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;      // tell mongoose to wait for data from database via built-in ES6 promise
 const slug = require('slugs');      // makes URL friendly names for our slugs
