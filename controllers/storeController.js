@@ -5,38 +5,29 @@ const jimp = require('jimp');
 const uuid = require('uuid');
 
 const multerOptions = {
-
     strorage: multer.memoryStorage(),
     fileFilter(req, file, next) {
-
         const isPhoto = file.mimetype.startsWith('image/');
         if (isPhoto) {
             next(null, true);   // when passing two values to 'next', this implies the current function succeeded, and the second value is what needs to be passed along
         } else {
             next({ message: 'That filetype isn\'t allowed!' }, false);
         }
-
     }
-
 };
 
 exports.homePage = (req, res) => {
-
     res.render('index');
-
 };
 
 exports.addStore = (req, res) => {
-    
     res.render('editStore', { title: '💩 Add Store' });
-
 };
 
 // store photo to server memory (temporary)
 exports.upload = multer(multerOptions).single('photo');
 
 exports.resize = async (req, res, next) => {
-
     // check if there is no new file to resize
     if (!req.file) return next();     // skip to next middleware
     const extension = req.file.mimetype.split('/')[1];  // grab 'jpeg' from mimetype
@@ -47,15 +38,12 @@ exports.resize = async (req, res, next) => {
     await photo.write(`./public/uploads/${req.body.photo}`);
     // once we've written the photo to filesystem, keep going
     next();
-
 };
 
 exports.createStore = async (req, res) => {
-
     const store = await (new Store(req.body)).save(); // will save to mongoDB and either: return store if successful, OR return the error that prevented it
     req.flash('success', `Successfully Created ${store.name}. Care to leave a review?`);
     res.redirect(`/store/${store.slug}`);      // redirects user to endpoint associated with the store they have just made
-
 };
 
 exports.getStores = async (req, res) => {
@@ -67,18 +55,15 @@ exports.getStores = async (req, res) => {
 };
 
 exports.editStore = async (req, res) => {
-
     // Find the store given the id
     const store = await Store.findOne({ _id: req.params.id });
     // TODO: Confirm they are the owner of the store
 
     // Render out the edit form for updating the store
     res.render('editStore', { title: `Edit ${store.name}`, store });
-
 };
 
 exports.updateStore = async (req, res) => {
-
     // set location data to type: point
     req.body.location.type = 'Point';
     
@@ -94,16 +79,24 @@ exports.updateStore = async (req, res) => {
     // redirect them to the store and tell them it worked
     req.flash('success', `Successfully Updated <strong>${store.name}</strong>. <a href="/stores/${store.slug}">View Store ➡️</a>`);
     res.redirect(`/stores/${store._id}/edit`);
-    
 };
 
 exports.getStoreBySlug = async (req, res, next) => {
-
     const store = await Store.findOne({ slug: req.params.slug });
     if (!store) return next(); // if nothing is found, go to next middleware
     res.render('store', { store, title: store.name });
     res.json(store);
+};
 
+exports.getStoresByTag = async (req, res) => {
+    const tag = req.params.tag;
+    const tagQuery = tag || { $exists: true };
+    const tagsPromise = Store.getTagsList();
+    const storesPromise = Store.find({ tags:  tagQuery });
+    // await for both Promises simultaneously (faster than awaiting one by one)
+    const [tags, stores] = await Promise.all([tagsPromise, storesPromise]);
+
+    res.render('tag', { tags, title: 'Tags', tag, stores });
 };
 
 // ------POSTERITY------

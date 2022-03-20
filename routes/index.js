@@ -33,6 +33,11 @@ router.get('/stores/:id/edit', catchErrors(storeController.editStore));
 
 router.get('/store/:slug', catchErrors(storeController.getStoreBySlug));
 
+router.get('/tags', catchErrors(storeController.getStoresByTag));
+router.get('/tags/:tag', catchErrors(storeController.getStoresByTag));
+
+//  --------FOR POSTERITY--------
+
 // create a new route where we put a variable inside the endpoint using ':' colon syntax
 router.get('/reverse/:name', (req, res) => {
   // reverse incoming string characters, return result
@@ -41,6 +46,8 @@ router.get('/reverse/:name', (req, res) => {
   res.send(reverse);
 
   res.send(req.params.name);    // this URL variable can then be accessed via req.params
-})
+});
+
+// ----------------
 
 module.exports = router;
