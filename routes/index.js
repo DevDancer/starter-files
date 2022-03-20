@@ -16,21 +16,17 @@ router.get('/stores', catchErrors(storeController.getStores));
 router.get('/add', storeController.addStore);
 
 router.post(
-
   '/add',
   storeController.upload,
   catchErrors(storeController.resize),
   catchErrors(storeController.createStore)
-  
 );
   
 router.post(
-    
   '/add/:id',
   storeController.upload,
   catchErrors(storeController.resize),
   catchErrors(storeController.updateStore)
-
 );
 
 router.get('/stores/:id/edit', catchErrors(storeController.editStore));
@@ -39,14 +35,12 @@ router.get('/store/:slug', catchErrors(storeController.getStoreBySlug));
 
 // create a new route where we put a variable inside the endpoint using ':' colon syntax
 router.get('/reverse/:name', (req, res) => {
-  
   // reverse incoming string characters, return result
   let reverse = [ ...req.params.name ];
   reverse = reverse.reverse().join('');
   res.send(reverse);
 
   res.send(req.params.name);    // this URL variable can then be accessed via req.params
-
 })
 
 module.exports = router;

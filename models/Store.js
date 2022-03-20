@@ -5,7 +5,6 @@ const slug = require('slugs');      // makes URL friendly names for our slugs
 
 // make schema
 const storeSchema = new mongoose.Schema({
-
     name: {
         type: String,
         trim: true,
@@ -36,18 +35,13 @@ const storeSchema = new mongoose.Schema({
         }
     },
     photo: String
-
 });
 
 storeSchema.pre('save', async function(next) {
-    
     if(!this.isModified('name')) {
-
         next(); // move to next middleware
         return; // stop remainder of code from running
-
     } else {
-        
         this.slug = slug(this.name);
 
         // find other stores with slug = ogi, ogi-1, ogi-2, etc
@@ -60,11 +54,9 @@ storeSchema.pre('save', async function(next) {
         }
 
         next();
-
     }
 
     // TODO: Make more resilient so all slugs are unique
-
-})
+});
 
 module.exports = mongoose.model('Store', storeSchema);
