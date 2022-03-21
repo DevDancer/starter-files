@@ -62,6 +62,10 @@ router.post('/account/reset/:token',
   catchErrors(authController.update)
 );
 
+// API
+
+router.get('/api/search', catchErrors(storeController.searchStores));
+
 //  --------FOR POSTERITY--------
 
 // create a new route where we put a variable inside the endpoint using ':' colon syntax

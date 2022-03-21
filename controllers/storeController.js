@@ -41,6 +41,7 @@ exports.resize = async (req, res, next) => {
 };
 
 exports.createStore = async (req, res) => {
+    req.body.author = req.user._id;
     const store = await (new Store(req.body)).save(); // will save to mongoDB and either: return store if successful, OR return the error that prevented it
     req.flash('success', `Successfully Created ${store.name}. Care to leave a review?`);
     res.redirect(`/store/${store.slug}`);      // redirects user to endpoint associated with the store they have just made
@@ -54,11 +55,17 @@ exports.getStores = async (req, res) => {
 
 };
 
+const confirmOwner = (store, user) => {
+    if (!store.author.equals(user._id)) {
+        throw Error('You must own a store in order to edit it');
+    }
+};
+
 exports.editStore = async (req, res) => {
     // Find the store given the id
     const store = await Store.findOne({ _id: req.params.id });
-    // TODO: Confirm they are the owner of the store
-
+    // Confirm they are the owner of the store
+    confirmOwner(store, req.user);
     // Render out the edit form for updating the store
     res.render('editStore', { title: `Edit ${store.name}`, store });
 };
@@ -82,10 +89,9 @@ exports.updateStore = async (req, res) => {
 };
 
 exports.getStoreBySlug = async (req, res, next) => {
-    const store = await Store.findOne({ slug: req.params.slug });
+    const store = await Store.findOne({ slug: req.params.slug }).populate('author');
     if (!store) return next(); // if nothing is found, go to next middleware
     res.render('store', { store, title: store.name });
-    res.json(store);
 };
 
 exports.getStoresByTag = async (req, res) => {
@@ -97,6 +103,20 @@ exports.getStoresByTag = async (req, res) => {
     const [tags, stores] = await Promise.all([tagsPromise, storesPromise]);
 
     res.render('tag', { tags, title: 'Tags', tag, stores });
+};
+
+exports.searchStores = async (req, res) => {
+    const stores = await Store
+        .find({
+            $text: {
+                $search: req.query.q,
+            }
+        }, {
+            score: { $meta: 'textScore' }
+        }).sort({
+            score: { $meta: 'textScore' }
+        }).limit(5);
+    res.json(stores);
 };
 
 // ------POSTERITY------
